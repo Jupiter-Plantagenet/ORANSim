@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: oransim
+Version: 0.1.0
+Summary: A 5G ORAN simulation library for AI-driven RAN testing
+Home-page: https://github.com/Jupiter-Plantagenet/ORANSim
+Author: Jupiter Plantagenet
+Author-email: your.email@example.com
+Requires-Python: >=3.8
+Requires-Dist: simpy>=4.0
+Requires-Dist: pydantic>=2.0
+Requires-Dist: numpy>=1.21
+Requires-Dist: gymnasium>=0.28
