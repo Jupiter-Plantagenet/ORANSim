@@ -11,7 +11,7 @@ setup(
         "gymnasium>=0.28",
     ],
     author="Jupiter Plantagenet",
-    author_email="your.email@example.com",
+    author_email="georgejupiter303@gmail.com",
     description="A 5G ORAN simulation library for AI-driven RAN testing",
     url="https://github.com/Jupiter-Plantagenet/ORANSim",
     python_requires=">=3.8",
