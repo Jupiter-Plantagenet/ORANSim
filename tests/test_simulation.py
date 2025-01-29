@@ -1,5 +1,10 @@
 import pytest  
 from oransim.simulation.scheduler import ORANScheduler  
+import pytest
+import numpy as np
+import simpy
+from oransim.simulation.scheduler import ORANScheduler
+from oransim.core.mobility import RandomWalkModel, UE
 
 class TestScheduler:  
     def test_event_scheduling(self):  
@@ -24,3 +29,16 @@ class TestScheduler:
         scheduler.add_event(3.0, increment)  
         scheduler.run(until=4.0)  
         assert counter[0] == 2  
+
+
+    def test_ue_mobility_integration(self):
+        scheduler = ORANScheduler()
+        initial_position = np.array([0.0, 0.0])
+        mobility_model = RandomWalkModel(step_size=1.0)
+        ue = UE(initial_position, mobility_model)
+    
+        scheduler.add_ue(ue)
+    
+        scheduler.run(until=1.0)  # run for 1 second
+    
+        assert not np.array_equal(ue.position, initial_position) # Position should have changed
