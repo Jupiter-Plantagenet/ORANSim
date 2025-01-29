@@ -1,0 +1,14 @@
+type: object
+required:
+  - node_id
+properties:
+  node_id:
+    type: string
+  frequency:
+    type: number
+  bandwidth:
+    type: number
+  tx_power:
+    type: number
+  max_ues:
+    type: integer

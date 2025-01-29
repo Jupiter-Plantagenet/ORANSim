@@ -38,6 +38,16 @@ class O_DU:
         """Callback for fronthaul IQ data from O-RU"""  
         self.received_iq.append(iq_data)  
         print(f"O-DU {self.config.cell_id} received IQ data of shape {iq_data.shape}")  
+    
+    def apply_o1_config(self, config: dict):
+      """Applies O1 configurations to O_DU."""
+      if "max_ues" in config:
+          self.config.max_ues = config["max_ues"]
+      if "transmit_power" in config:
+          self.config.transmit_power = config["transmit_power"]
+
+      print(f"O-DU {self.config.cell_id} configured with O1: {config}")
+
 
 @dataclass  
 class RUConfig:  
@@ -63,4 +73,14 @@ class O_RU:
         """Transmit IQ data to O-DU via fronthaul with simulated latency/jitter."""  
         iq_data = self.generate_iq_data()  
         latency = max(0.001, random.normalvariate(0.1, 0.02))  # 100ms ±20ms  
-        self.scheduler.add_event(latency, target_du.receive_iq_data, iq_data)  
+        self.scheduler.add_event(latency, target_du.receive_iq_data, iq_data)
+    
+    def apply_o1_config(self, config: dict):
+        """Applies O1 configurations to O_RU."""
+        if "frequency" in config:
+            self.config.frequency = config["frequency"]
+        if "bandwidth" in config:
+            self.config.bandwidth = config["bandwidth"]
+        if "tx_power" in config:
+          self.config.tx_power = config["tx_power"]
+        print(f"O-RU {self.config.ru_id} configured with O1: {config}")
