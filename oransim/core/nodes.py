@@ -9,6 +9,7 @@ from oransim.interfaces.e2 import E2Interface
 from oransim.interfaces.open_fronthaul import OpenFronthaulInterface
 from oransim.interfaces.xn import XnInterface
 from oransim.interfaces.x2 import X2Interface
+from oransim.simulation.scheduler import ORANScheduler
 
 
 class RUConfig:
@@ -76,7 +77,7 @@ class O_RU:
     Represents an O-RAN Radio Unit (O-RU).
     """
 
-    def __init__(self, config: RUConfig, scheduler):
+    def __init__(self, config: RUConfig, scheduler: ORANScheduler):
         self.config = config
         self.scheduler = scheduler
         self.connected_ues = set()
