@@ -7,6 +7,8 @@ from oransim.interfaces.o1 import ConfigStatus
 from oransim.interfaces.f1 import F1Interface
 from oransim.interfaces.e2 import E2Interface
 from oransim.interfaces.open_fronthaul import OpenFronthaulInterface
+from oransim.interfaces.xn import XnInterface
+
 
 class RUConfig:
     """
@@ -217,6 +219,31 @@ class O_DU:
             # Perform actions based on message type
             pass
         # Add more message handling logic as needed
+    
+    def set_xn_interface(self, xn_interface: XnInterface):
+        """
+        Sets the Xn interface for this O-DU.
+
+        Args:
+            xn_interface: The Xn interface to set.
+        """
+        self.xn_interface = xn_interface
+
+    def receive_xn_message(self, message: Dict[str, Any], source_node_id: str):
+        """
+        Handles Xn messages received by the O-DU.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node_id (str): The ID of the source node that sent the message.
+        """
+        self.logger.info(f"O-DU {self.config.du_id} received Xn message from {source_node_id}: {message}")
+        # Process the received Xn message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "handover_request":
+            # Handle handover request
+            pass
+        # Add more message handling logic as needed
 
 class O_CU_CP:
     """
@@ -270,6 +297,31 @@ class O_CU_CP:
             pass
         # Add more message handling logic as needed
 
+    def set_xn_interface(self, xn_interface: XnInterface):
+        """
+        Sets the Xn interface for this O-CU-CP.
+
+        Args:
+            xn_interface: The Xn interface to set.
+        """
+        self.xn_interface = xn_interface
+
+    def receive_xn_message(self, message: Dict[str, Any], source_node_id: str):
+      """
+      Handles Xn messages received by the O-CU-CP.
+
+      Args:
+          message (Dict[str, Any]): The received message.
+          source_node_id (str): The ID of the source node that sent the message.
+      """
+      self.logger.info(f"O-CU-CP {self.config.cucp_id} received Xn message from {source_node_id}: {message}")
+      # Process the received Xn message here
+      # Example: Check message type and perform actions accordingly
+      if message["type"] == "xn_message_type":
+          # Perform actions based on message type
+          pass
+      # Add more message handling logic as needed
+
     # Add methods for handling control plane messages and interactions with O-DUs
 
 class O_CU_UP:
@@ -320,6 +372,31 @@ class O_CU_UP:
         # Process the received F1 message here
         # Example: Check message type and perform actions accordingly
         if message["type"] == "some_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
+    
+    def set_xn_interface(self, xn_interface: XnInterface):
+        """
+        Sets the Xn interface for this O-CU-UP.
+
+        Args:
+            xn_interface: The Xn interface to set.
+        """
+        self.xn_interface = xn_interface
+
+    def receive_xn_message(self, message: Dict[str, Any], source_node_id: str):
+        """
+        Handles Xn messages received by the O-CU-UP.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node_id (str): The ID of the source node that sent the message.
+        """
+        self.logger.info(f"O-CU-UP {self.config.cuup_id} received Xn message from {source_node_id}: {message}")
+        # Process the received Xn message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "xn_message_type":
             # Perform actions based on message type
             pass
         # Add more message handling logic as needed
