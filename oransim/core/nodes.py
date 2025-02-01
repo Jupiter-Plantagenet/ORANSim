@@ -8,6 +8,7 @@ from oransim.interfaces.f1 import F1Interface
 from oransim.interfaces.e2 import E2Interface
 from oransim.interfaces.open_fronthaul import OpenFronthaulInterface
 from oransim.interfaces.xn import XnInterface
+from oransim.interfaces.x2 import X2Interface
 
 
 class RUConfig:
@@ -244,6 +245,31 @@ class O_DU:
             # Handle handover request
             pass
         # Add more message handling logic as needed
+    
+    def set_x2_interface(self, x2_interface: X2Interface):
+        """
+        Sets the X2 interface for this O-DU.
+
+        Args:
+            x2_interface: The X2 interface to set.
+        """
+        self.x2_interface = x2_interface
+
+    def receive_x2_message(self, message: Dict[str, Any], source_node_id: str):
+        """
+        Handles X2 messages received by the O-DU.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node_id (str): The ID of the source node that sent the message.
+        """
+        self.logger.info(f"O-DU {self.config.du_id} received X2 message from {source_node_id}: {message}")
+        # Process the received X2 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "handover_request":
+            # Handle handover request
+            pass
+        # Add more message handling logic as needed
 
 class O_CU_CP:
     """
@@ -322,6 +348,31 @@ class O_CU_CP:
           pass
       # Add more message handling logic as needed
 
+    def set_x2_interface(self, x2_interface: X2Interface):
+        """
+        Sets the X2 interface for this O-CU-CP.
+
+        Args:
+            x2_interface: The X2 interface to set.
+        """
+        self.x2_interface = x2_interface
+
+    def receive_x2_message(self, message: Dict[str, Any], source_node_id: str):
+        """
+        Handles X2 messages received by the O-CU-CP.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node_id (str): The ID of the source node that sent the message.
+        """
+        self.logger.info(f"O-CU-CP {self.config.cucp_id} received X2 message from {source_node_id}: {message}")
+        # Process the received X2 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "x2_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
+
     # Add methods for handling control plane messages and interactions with O-DUs
 
 class O_CU_UP:
@@ -397,6 +448,32 @@ class O_CU_UP:
         # Process the received Xn message here
         # Example: Check message type and perform actions accordingly
         if message["type"] == "xn_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
+    
+    def set_x2_interface(self, x2_interface: X2Interface):
+        """
+        Sets the X2 interface for this O-CU-UP.
+
+        Args:
+            x2_interface: The X2 interface to set.
+        """
+        self.x2_interface = x2_interface
+
+    def receive_x2_message(self, message: Dict[str, Any], source_node_id: str):
+        """
+
+        Handles X2 messages received by the O-CU-UP.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node_id (str): The ID of the source node that sent the message.
+        """
+        self.logger.info(f"O-CU-UP {self.config.cuup_id} received X2 message from {source_node_id}: {message}")
+        # Process the received X2 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "x2_message_type":
             # Perform actions based on message type
             pass
         # Add more message handling logic as needed
