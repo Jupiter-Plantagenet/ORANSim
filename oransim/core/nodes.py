@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from typing import Optional, Union, List, Dict, Any
 from enum import Enum
 from oransim.core.interfaces.o1 import ConfigStatus
+from oransim.interfaces.f1 import F1Interface
+from oransim.interfaces.e2 import E2Interface
 
 class RUConfig:
     """
@@ -115,6 +117,7 @@ class O_DU:
         self.connected_ues = []
         self.e2_node = None
         self.e2_interface = None
+        self.f1_interface = None
 
     def set_e2_node(self, e2_node):
         """
@@ -162,6 +165,31 @@ class O_DU:
 
         print(f"O-DU {self.config.du_id} configured with O1: {config}")
 
+    def set_f1_interface(self, f1_interface: F1Interface):
+        """
+        Sets the F1 interface for this O-DU.
+
+        Args:
+            f1_interface: The F1 interface to set.
+        """
+        self.f1_interface = f1_interface
+
+    def receive_f1_message(self, message: Dict[str, Any], source_node: str):
+        """
+        Handles F1 messages received by the O-DU.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node (str): The source node of the message (e.g., "o-cu-cp", "o-cu-up").
+        """
+        self.logger.info(f"O-DU received F1 message from {source_node}: {message}")
+        # Process the received F1 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "some_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
+
 class O_CU_CP:
     """
     Represents an O-RAN Central Unit - Control Plane (O-CU-CP).
@@ -170,6 +198,7 @@ class O_CU_CP:
         self.config = config
         self.scheduler = scheduler
         self.e2_node = None
+        self.f1_interface = None
 
     def set_e2_node(self, e2_node):
         """
@@ -188,6 +217,31 @@ class O_CU_CP:
             self.config.cells = config["cells"]
         print(f"O-CU-CP {self.config.cucp_id} configured with O1: {config}")
 
+    def set_f1_interface(self, f1_interface: F1Interface):
+        """
+        Sets the F1 interface for this O-CU-CP.
+
+        Args:
+            f1_interface: The F1 interface to set.
+        """
+        self.f1_interface = f1_interface
+
+    def receive_f1_message(self, message: Dict[str, Any], source_node: str):
+        """
+        Handles F1 messages received by the O-CU-CP.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node (str): The source node of the message (e.g., "o-du").
+        """
+        self.logger.info(f"O-CU-CP received F1 message from {source_node}: {message}")
+        # Process the received F1 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "some_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
+
     # Add methods for handling control plane messages and interactions with O-DUs
 
 class O_CU_UP:
@@ -198,6 +252,7 @@ class O_CU_UP:
         self.config = config
         self.scheduler = scheduler
         self.e2_node = None
+        self.f1_interface = None
 
     def set_e2_node(self, e2_node):
         """
@@ -215,6 +270,31 @@ class O_CU_UP:
         if "cells" in config:
             self.config.cells = config["cells"]
         print(f"O-CU-UP {self.config.cuup_id} configured with O1: {config}")
+    
+    def set_f1_interface(self, f1_interface: F1Interface):
+        """
+        Sets the F1 interface for this O-CU-UP.
+
+        Args:
+            f1_interface: The F1 interface to set.
+        """
+        self.f1_interface = f1_interface
+
+    def receive_f1_message(self, message: Dict[str, Any], source_node: str):
+        """
+        Handles F1 messages received by the O-CU-UP.
+
+        Args:
+            message (Dict[str, Any]): The received message.
+            source_node (str): The source node of the message (e.g., "o-du").
+        """
+        self.logger.info(f"O-CU-UP received F1 message from {source_node}: {message}")
+        # Process the received F1 message here
+        # Example: Check message type and perform actions accordingly
+        if message["type"] == "some_message_type":
+            # Perform actions based on message type
+            pass
+        # Add more message handling logic as needed
 
     # Add methods for handling user plane data and interactions with O-DUs
 
