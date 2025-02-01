@@ -1,7 +1,7 @@
 # oransim/core/ric.py
 from typing import Dict, Any, List
-from oransim.core.interfaces.a1 import A1Interface, A1Policy
-from oransim.core.interfaces.e2 import E2Interface
+from oransim.interfaces.a1 import A1Interface, A1Policy
+from oransim.interfaces.e2 import E2Interface
 import logging
 
 # Configure logging
@@ -12,7 +12,8 @@ class NearRTRIC:
     Represents a Near-Real-Time RAN Intelligent Controller (Near-RT RIC) in the ORAN architecture.
     """
 
-    def __init__(self, a1_interface: A1Interface, e2_interface: E2Interface, scheduler):
+    def __init__(self, near_rt_ric_id: str,  a1_interface: A1Interface, e2_interface: E2Interface, scheduler):
+        self.near_rt_ric_id = near_rt_ric_id
         self.a1_interface = a1_interface
         self.e2_interface = e2_interface
         self.scheduler = scheduler
@@ -86,31 +87,31 @@ class NearRTRIC:
         self.supported_e2sm[e2sm_id] = e2sm
 
 class NonRTRIC:
-   """
-   Represents a Non-Real-Time RAN Intelligent Controller (Non-RT RIC) in the ORAN architecture.
-   """
+    """
+    Represents a Non-Real-Time RAN Intelligent Controller (Non-RT RIC) in the ORAN architecture.
+    """
 
-   def __init__(self, a1_interface: A1Interface, scheduler):
-       self.a1_interface = a1_interface
-       self.scheduler = scheduler
-       self.rapps: Dict[str, Any] = {}  # rApp instances managed by this Non-RT RIC
-       self.managed_near_rt_rics: List[NearRTRIC] = []  # List of Near-RT RICs managed by this Non-RT RIC
-       self.logger = logging.getLogger(self.__class__.__name__)
+    def __init__(self, a1_interface: A1Interface, scheduler):
+        self.a1_interface = a1_interface
+        self.scheduler = scheduler
+        self.rapps: Dict[str, RApp] = {}  # rApp instances managed by this Non-RT RIC
+        self.managed_near_rt_rics: List[NearRTRIC] = []  # List of Near-RT RICs managed by this Non-RT RIC
+        self.logger = logging.getLogger(self.__class__.__name__)
 
-   def add_rapp(self, rapp):
-       """Registers an rApp with the Non-RT RIC."""
-       self.rapps[rapp.rapp_id] = rapp
-       self.logger.info(f"rApp {rapp.rapp_id} registered with Non-RT RIC")
+    def add_rapp(self, rapp: RApp):
+        """Registers an rApp with the Non-RT RIC."""
+        self.rapps[rapp.rapp_id] = rapp
+        self.logger.info(f"rApp {rapp.rapp_id} registered with Non-RT RIC")
 
-   def remove_rapp(self, rapp_id: str):
-       """Unregisters an rApp from the Non-RT RIC."""
-       if rapp_id in self.rapps:
-           del self.rapps[rapp_id]
-           self.logger.info(f"rApp {rapp_id} unregistered from Non-RT RIC")
-       else:
-           self.logger.warning(f"rApp {rapp_id} not found in Non-RT RIC")
+    def remove_rapp(self, rapp_id: str):
+        """Unregisters an rApp from the Non-RT RIC."""
+        if rapp_id in self.rapps:
+            del self.rapps[rapp_id]
+            self.logger.info(f"rApp {rapp_id} unregistered from Non-RT RIC")
+        else:
+            self.logger.warning(f"rApp {rapp_id} not found in Non-RT RIC")
 
-   def create_a1_policy(self, policy_type: str, policy_content: Dict[str, Any], target: str):
+    def create_a1_policy(self, policy_type: A1PolicyType, policy_content: Dict[str, Any], target: str) -> A1Policy:
         """Creates an A1 policy."""
         policy_id = f"policy-{len(self.a1_interface.near_rt_ric.a1_policies) + 1}" # Simple ID generation
         policy = A1Policy(
@@ -122,12 +123,12 @@ class NonRTRIC:
         self.logger.info(f"Non-RT RIC created A1 policy of type {policy_type} with ID {policy_id}")
         return policy
 
-   def send_a1_policy(self, policy: A1Policy, near_rt_ric: NearRTRIC):
+    def send_a1_policy(self, policy: A1Policy, near_rt_ric: NearRTRIC):
         """Sends an A1 policy to a Near-RT RIC."""
         self.a1_interface.send_policy(policy, near_rt_ric)
         self.logger.info(f"Non-RT RIC sent A1 policy of type {policy.policy_type} with ID {policy.policy_id}  to Near-RT RIC")
 
-   def add_managed_near_rt_ric(self, near_rt_ric: NearRTRIC):
-       """Adds a Near-RT RIC to the list of managed Near-RT RICs."""
-       self.managed_near_rt_rics.append(near_rt_ric)
-       print(f"Added Near-RT RIC to managed list")
+    def add_managed_near_rt_ric(self, near_rt_ric: NearRTRIC):
+        """Adds a Near-RT RIC to the list of managed Near-RT RICs."""
+        self.managed_near_rt_rics.append(near_rt_ric)
+        print(f"Added Near-RT RIC to managed list")
