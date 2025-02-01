@@ -3,9 +3,10 @@ import random
 from dataclasses import dataclass
 from typing import Optional, Union, List, Dict, Any
 from enum import Enum
-from oransim.core.interfaces.o1 import ConfigStatus
+from oransim.interfaces.o1 import ConfigStatus
 from oransim.interfaces.f1 import F1Interface
 from oransim.interfaces.e2 import E2Interface
+from oransim.interfaces.open_fronthaul import OpenFronthaulInterface
 
 class RUConfig:
     """
@@ -77,6 +78,7 @@ class O_RU:
         self.scheduler = scheduler
         self.connected_ues = set()
         self.iq_buffer = []
+        self.fronthaul_interface = None
 
     def generate_iq_data(self) -> np.ndarray:
         """Simulate IQ samples (complex numbers) for fronthaul transmission."""
@@ -104,6 +106,23 @@ class O_RU:
             self.config.supported_operations = config["supported_operations"]
 
         print(f"O-RU {self.config.ru_id} configured with O1: {config}")
+    
+    def set_fronthaul_interface(self, fronthaul_interface: OpenFronthaulInterface):
+        """
+        Sets the fronthaul interface for this O-RU.
+
+        Args:
+            fronthaul_interface: The fronthaul interface to set.
+        """
+        self.fronthaul_interface = fronthaul_interface
+
+    def send_iq_data(self, target_du):
+        """Transmit IQ data to O-DU via fronthaul with simulated latency/jitter."""
+        iq_data = self.generate_iq_data()
+        if self.fronthaul_interface:
+            self.fronthaul_interface.transmit_iq_data(iq_data, self, target_du)
+        else:
+            print("Fronthaul interface not set for O-RU")
 
 class O_DU:
     """
@@ -118,6 +137,15 @@ class O_DU:
         self.e2_node = None
         self.e2_interface = None
         self.f1_interface = None
+
+    def set_fronthaul_interface(self, fronthaul_interface: OpenFronthaulInterface):
+        """
+        Sets the fronthaul interface for this O-DU.
+
+        Args:
+            fronthaul_interface: The fronthaul interface to set.
+        """
+        self.fronthaul_interface = fronthaul_interface
 
     def set_e2_node(self, e2_node):
         """
