@@ -114,6 +114,7 @@ class O_DU:
         self.received_iq = []
         self.connected_ues = []
         self.e2_node = None
+        self.e2_interface = None
 
     def set_e2_node(self, e2_node):
         """
@@ -123,6 +124,15 @@ class O_DU:
             e2_node: The E2 node to set.
         """
         self.e2_node = e2_node
+
+    def set_e2_interface(self, e2_interface):
+        """
+        Sets the E2 interface for this O-DU.
+
+        Args:
+            e2_interface: The E2 interface to set.
+        """
+        self.e2_interface = e2_interface
 
     def receive_iq_data(self, iq_data: np.ndarray):
         """Callback for fronthaul IQ data from O-RU"""
@@ -138,8 +148,8 @@ class O_DU:
                 "metric": "cell_load",
                 "value": load
             }
-            if self.e2_node:
-                self.e2_node.send_message(message, self.config.du_id)
+            if self.e2_interface and self.e2_node:
+                self.e2_interface.send_message(message, self.e2_node)
 
     def apply_o1_config(self, config: Dict[str, Any]):
         """Applies O1 configurations to O_DU."""
