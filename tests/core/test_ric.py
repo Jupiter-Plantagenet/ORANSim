@@ -1,86 +1,121 @@
 import pytest
-import numpy as np
-from oransim.core.nodes import O_RU, O_DU, O_CU_CP, O_CU_UP, UE, RUConfig, DUConfig, CUCPConfig, CUUPConfig
-from oransim.core.mobility import MobilityModel, RandomWalkModel
-from oransim.simulation.scheduler import ORANScheduler
+from oransim.core.ric import NearRTRIC, NonRTRIC
+from oransim.core.interfaces.a1 import A1Interface, A1Policy, A1PolicyType
+from oransim.core.interfaces.e2 import E2Interface
+from oransim.core.nodes import O_DU, DUConfig
 
-# Mock the scheduler for testing
+# Mock the scheduler, A1, and E2 interfaces for testing
 class MockScheduler:
     def add_event(self, delay, callback, *args):
         pass
-scheduler = MockScheduler()
+
+class MockA1Interface:
+    def send_policy(self, policy, near_rt_ric):
+        pass
+
+class MockE2Interface:
+    def send_indication(self, message, du_id):
+        pass
+    def subscribe(self, subscriber_id, callback):
+        pass
 
 # Test Data
 @pytest.fixture
-def sample_ru_config():
-    return RUConfig(ru_id="ru_1", frequency=2.4e9, bandwidth=20e6, tx_power=30)
+def scheduler():
+    return MockScheduler()
+
+@pytest.fixture
+def a1_interface():
+    return MockA1Interface()
+
+@pytest.fixture
+def e2_interface():
+    return MockE2Interface()
 
 @pytest.fixture
 def sample_du_config():
     return DUConfig(du_id="du_1", max_ues=10)
 
 @pytest.fixture
-def sample_cucp_config():
-    return CUCPConfig(cucp_id="cucp_1")
+def sample_policy():
+    return A1Policy(policy_type=A1PolicyType.TYPE_1, policy_id="policy_1", policy_content={"param1": "value1"}, target="o_du")
 
-@pytest.fixture
-def sample_cuup_config():
-    return CUUPConfig(cuup_id="cuup_1")
+# Test Cases for NearRTRIC
+def test_near_rt_ric_initialization(a1_interface, e2_interface, scheduler):
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
+    assert near_rt_ric.a1_interface == a1_interface
+    assert near_rt_ric.e2_interface == e2_interface
+    assert near_rt_ric.scheduler == scheduler
+    assert near_rt_ric.xapps == {}
+    assert near_rt_ric.a1_policies == {}
+    assert near_rt_ric.e2_nodes == {}
 
-@pytest.fixture
-def sample_mobility_model():
-    return RandomWalkModel()
+def test_near_rt_ric_add_remove_xapp(a1_interface, e2_interface, scheduler):
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
 
-# Test Cases
-def test_o_ru_initialization(sample_ru_config):
-    o_ru = O_RU(sample_ru_config, scheduler)
-    assert o_ru.config == sample_ru_config
-    assert o_ru.scheduler == scheduler
-    assert o_ru.connected_ues == set()
-    assert o_ru.iq_buffer == []
+    class MockXApp:
+        def __init__(self, xapp_id):
+            self.xapp_id = xapp_id
 
-def test_o_ru_generate_iq_data(sample_ru_config):
-    o_ru = O_RU(sample_ru_config, scheduler)
-    iq_data = o_ru.generate_iq_data()
-    assert isinstance(iq_data, np.ndarray)
+        def receive_indication(self, message, du_id):
+            pass
 
-def test_o_du_initialization(sample_du_config):
+    xapp = MockXApp("xapp_1")
+    near_rt_ric.add_xapp(xapp)
+    assert "xapp_1" in near_rt_ric.xapps
+
+    near_rt_ric.remove_xapp("xapp_1")
+    assert "xapp_1" not in near_rt_ric.xapps
+
+def test_near_rt_ric_receive_a1_policy(a1_interface, e2_interface, scheduler, sample_policy):
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
+    near_rt_ric.receive_a1_policy(sample_policy.model_dump())
+    assert sample_policy.policy_id in near_rt_ric.a1_policies
+
+def test_near_rt_ric_register_e2_node(a1_interface, e2_interface, scheduler, sample_du_config):
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
     o_du = O_DU(sample_du_config, scheduler)
-    assert o_du.config == sample_du_config
-    assert o_du.scheduler == scheduler
-    assert o_du.received_iq == []
-    assert o_du.connected_ues == []
+    near_rt_ric.register_e2_node("du_1", o_du)
+    assert "du_1" in near_rt_ric.e2_nodes
+    assert near_rt_ric.e2_nodes["du_1"] == o_du
 
-def test_o_cu_cp_initialization(sample_cucp_config):
-    o_cu_cp = O_CU_CP(sample_cucp_config, scheduler)
-    assert o_cu_cp.config == sample_cucp_config
-    assert o_cu_cp.scheduler == scheduler
+# Test Cases for NonRTRIC
+def test_non_rt_ric_initialization(a1_interface, scheduler):
+    non_rt_ric = NonRTRIC(a1_interface, scheduler)
+    assert non_rt_ric.a1_interface == a1_interface
+    assert non_rt_ric.scheduler == scheduler
+    assert non_rt_ric.rapps == {}
+    assert non_rt_ric.managed_near_rt_rics == []
 
-def test_o_cu_up_initialization(sample_cuup_config):
-    o_cu_up = O_CU_UP(sample_cuup_config, scheduler)
-    assert o_cu_up.config == sample_cuup_config
-    assert o_cu_up.scheduler == scheduler
+def test_non_rt_ric_add_remove_rapp(a1_interface, scheduler):
+    non_rt_ric = NonRTRIC(a1_interface, scheduler)
 
-def test_ue_initialization(sample_mobility_model):
-    initial_position = np.array([0, 0])
-    ue = UE("ue_1", initial_position, sample_mobility_model, scheduler)
-    assert ue.ue_id == "ue_1"
-    assert np.array_equal(ue.position, initial_position)
-    assert ue.mobility_model == sample_mobility_model
-    assert ue.scheduler == scheduler
-    assert ue.o_du is None
+    class MockRApp:
+        def __init__(self, rapp_id):
+            self.rapp_id = rapp_id
 
-def test_ue_attach_detach(sample_du_config, sample_mobility_model):
-    initial_position = np.array([0, 0])
-    ue = UE("ue_1", initial_position, sample_mobility_model, scheduler)
-    o_du = O_DU(sample_du_config, scheduler)
+    rapp = MockRApp("rapp_1")
+    non_rt_ric.add_rapp(rapp)
+    assert "rapp_1" in non_rt_ric.rapps
 
-    ue.attach_to_du(o_du)
-    assert ue.o_du == o_du
-    assert ue in o_du.connected_ues
+    non_rt_ric.remove_rapp("rapp_1")
+    assert "rapp_1" not in non_rt_ric.rapps
 
-    ue.detach_from_du()
-    assert ue.o_du is None
-    assert ue not in o_du.connected_ues
+def test_non_rt_ric_create_a1_policy(a1_interface, scheduler):
+    non_rt_ric = NonRTRIC(a1_interface, scheduler)
+    policy = non_rt_ric.create_a1_policy(A1PolicyType.TYPE_1, {"param1": "value1"}, "o_du")
+    assert isinstance(policy, A1Policy)
+    assert policy.policy_type == A1PolicyType.TYPE_1
 
-# Add more test cases to cover other methods and functionalities of the node classes
+def test_non_rt_ric_send_a1_policy(a1_interface, e2_interface, scheduler, sample_policy):
+    non_rt_ric = NonRTRIC(a1_interface, scheduler)
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
+    non_rt_ric.send_a1_policy(sample_policy, near_rt_ric)
+
+def test_non_rt_ric_add_managed_near_rt_ric(a1_interface, e2_interface, scheduler):
+    non_rt_ric = NonRTRIC(a1_interface, scheduler)
+    near_rt_ric = NearRTRIC("near_rt_ric_1", a1_interface, e2_interface, scheduler)
+    non_rt_ric.add_managed_near_rt_ric(near_rt_ric)
+    assert near_rt_ric in non_rt_ric.managed_near_rt_rics
+
+# Add more test cases to cover other methods and functionalities of NearRTRIC and NonRTRIC
