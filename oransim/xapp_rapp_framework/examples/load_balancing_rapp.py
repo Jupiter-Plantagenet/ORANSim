@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any
-from oransim.core.interfaces.a1 import A1Interface, A1Policy, A1PolicyType
+from oransim.interfaces.a1 import A1Interface, A1Policy, A1PolicyType
 from oransim.xapp_rapp_framework.rapp import RApp
 
 # Configure logging
