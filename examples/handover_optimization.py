@@ -1,11 +1,11 @@
 import logging
 import numpy as np
 from oransim.core.nodes import O_RU, O_DU, UE, DUConfig, RUConfig
-from oransim.core.interfaces.o1 import O1Interface
-from oransim.core.interfaces.e2 import E2Interface
-from oransim.core.interfaces.f1 import F1Interface
-from oransim.core.interfaces.xn import XnInterface
-from oransim.core.interfaces.x2 import X2Interface
+from oransim.interfaces.o1 import O1Interface
+from oransim.interfaces.e2 import E2Interface
+from oransim.interfaces.f1 import F1Interface
+from oransim.interfaces.xn import XnInterface
+from oransim.interfaces.x2 import X2Interface
 from oransim.core.mobility import RandomWaypointModel
 from oransim.simulation.scheduler import ORANScheduler
 from oransim.xapp_rapp_framework.xapp import XApp
@@ -15,7 +15,7 @@ from oransim.analytics.visualizer import DataVisualizer
 from oransim.core.ric import NearRTRIC, NonRTRIC
 from oransim.xapp_rapp_framework.xapp import XApp
 from oransim.xapp_rapp_framework.rapp import RApp
-from oransim.core.interfaces.a1 import A1Interface, A1Policy, A1PolicyType
+from oransim.interfaces.a1 import A1Interface, A1Policy, A1PolicyType
 import oransim.config_schema as config_schema
 import os
 import yaml
