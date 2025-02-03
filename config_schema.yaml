@@ -1,0 +1,118 @@
+type: object
+required:
+  - node_id
+properties:
+  node_id:
+    type: string
+    description: Unique identifier for the node
+  node_type:
+    type: string
+    enum: [o-ru, o-du, o-cu-cp, o-cu-up, near-rt-ric, non-rt-ric]
+    description: Type of the node
+  frequency:
+    type: number
+    description: Operating frequency in Hz
+    minimum: 0
+  bandwidth:
+    type: number
+    description: Bandwidth in Hz
+    minimum: 0
+  tx_power:
+    type: number
+    description: Transmission power in dBm
+    minimum: -30
+    maximum: 50
+  max_ues:
+    type: integer
+    description: Maximum number of UEs that can be connected
+    minimum: 0
+  cells:
+    type: array
+    description: List of cells associated with the node
+    items:
+      type: object
+      properties:
+        cell_id:
+          type: string
+          description: Unique identifier for the cell
+        du_id:
+          type: string
+          description: ID of the DU associated with the cell (if applicable)
+        max_ues:
+          type: integer
+          description: Maximum number of UEs that can be connected to the cell
+          minimum: 0
+      required:
+        - cell_id
+  schedulers:
+    type: array
+    description: List of schedulers associated with the node
+    items:
+      type: string
+  supported_operations:
+    type: array
+    description: List of supported operations by the O-RU
+    items:
+      type: string
+  control_schedulers:
+    type: array
+    description: List of control schedulers associated with the O-CU-CP
+    items:
+      type: string
+  qos_schedulers:
+    type: array
+    description: List of QoS schedulers associated with the O-CU-UP
+    items:
+      type: string
+  xapps:
+    type: array
+    description: List of xApps associated with the Near-RT RIC
+    items:
+      type: string
+  rapps:
+    type: array
+    description: List of rApps associated with the Non-RT RIC
+    items:
+      type: string
+  managed_near_rt_rics:
+    type: array
+    description: List of Near-RT RICs managed by the Non-RT RIC
+    items:
+      type: string
+  e2_nodes:
+    type: array
+    description: List of E2 nodes associated with the Near-RT RIC
+    items:
+      type: string
+  supported_e2sm:
+    type: array
+    description: List of E2 service models supported by the Near-RT RIC
+    items:
+      type: string
+  a1_policies:
+    type: array
+    description: List of A1 policies associated with the Near-RT RIC
+    items:
+      type: object
+      properties:
+        policy_type:
+          type: string
+          description: The type of the A1 policy
+        policy_id:
+          type: string
+          description: Unique identifier for the policy
+        policy_content:
+          type: object
+          description: The content of the policy (specific to the policy type)
+        version:
+          type: string
+          description: Version of the policy
+        target:
+          type: string
+          description: Target for the policy (e.g., 'o-du', 'o-ru')
+      required:
+        - policy_type
+        - policy_id
+        - policy_content
+        - version
+        - target
