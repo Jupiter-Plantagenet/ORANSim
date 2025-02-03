@@ -1,0 +1,27 @@
+# Core simulation dependencies
+simpy>=4.0.1
+numpy>=1.21
+jsonschema>=4.0.0
+pyyaml>=6.0
+pydantic>=2.5.0
+
+# Optional dependencies for visualization
+matplotlib>=3.3.4
+plotly>=5.0.0
+
+# Optional dependencies for database integration (if used)
+# influxdb-client>=1.20.0
+
+# Optional dependencies for ML/ONNX (if used)
+# onnx>=1.10.0
+# onnxruntime>=1.10.0
+# tensorflow>=2.0.0
+# torch>=1.10.0
+
+# Testing dependencies
+pytest>=7.0
+
+# Documentation dependencies
+sphinx>=5.0.0
+# sphinx_rtd_theme>=1.0.0  # Uncomment if you choose the Read the Docs theme
+# You might need additional Sphinx extensions depending on your choices
