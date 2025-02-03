@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'ORANSim'
-copyright = '2023, Your Name or Organization'
-author = 'Your Name or Organization'
+copyright = '2025, Networked Systems Laboratory (NSL)'
+author = 'George Chidera Akor, NSL'
 release = '0.1.0' # Update with your project's version number
 
 # -- General configuration ---------------------------------------------------
